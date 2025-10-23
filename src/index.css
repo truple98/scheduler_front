@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* Calendar specific styles */
+.calendar-day-cell {
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  min-height: 100px;
+}
+
+.calendar-day-cell:nth-child(7n) {
+  border-right: none;
+}
+
+.calendar-days {
+  min-height: 600px;
+}
+
+/* Hide scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
