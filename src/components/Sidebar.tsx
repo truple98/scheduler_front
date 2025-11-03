@@ -1,14 +1,16 @@
 import { Link, useLocation } from 'react-router-dom'
 import { AiFillHome } from 'react-icons/ai'
 import { MdSchedule, MdCalendarToday } from 'react-icons/md'
+import { FaBook } from 'react-icons/fa'
 
 const Sidebar = () => {
   const location = useLocation()
 
   const menuItems = [
-    { text: 'Home', path: '/', icon: AiFillHome },
+    { text: 'Dashboard', path: '/', icon: AiFillHome },
     { text: 'Schedule', path: '/schedule', icon: MdSchedule },
     { text: 'Calendar', path: '/calendar', icon: MdCalendarToday },
+    { text: 'Journal', path: '/journal', icon: FaBook },
   ]
 
   return (

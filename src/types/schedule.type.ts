@@ -11,6 +11,7 @@ export interface Schedule {
   status?: ScheduleStatus;
   priority?: SchedulePriority;
   project?: string | null; // 프로젝트 ID (null이면 일반 일정)
+  note?: string; // 메모 필드
 }
 
 export interface ScheduleCreateInput {

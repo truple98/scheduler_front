@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
+import { useHeader } from '../contexts/HeaderContext'
 
 type TimeSlot = {
   date: Date
@@ -13,6 +14,7 @@ const Calendar = () => {
   const [dragStartDate, setDragStartDate] = useState<Date | null>(null)
   const [miniCalendarDate, setMiniCalendarDate] = useState(new Date())
   const [viewMode, setViewMode] = useState<'week' | 'month'>('month')
+  const { setLeftContent, setRightContent } = useHeader()
 
   // 주별 뷰용 시간대 선택 상태
   const [selectedTimeSlots, setSelectedTimeSlots] = useState<TimeSlot[]>([])
@@ -238,64 +240,76 @@ const Calendar = () => {
     setSelectedDates(range)
   }
 
+  // 헤더 컨텐츠 설정
+  useEffect(() => {
+    // 좌측: 년/월 표시 + 이전/다음 버튼
+    setLeftContent(
+      <div className="flex items-center gap-4">
+        <button
+          onClick={navigatePrevious}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <FaChevronLeft className="text-gray-600" />
+        </button>
+
+        <h2 className="text-xl font-bold text-gray-800">
+          {currentDate.getFullYear()}년 {monthNames[currentDate.getMonth()]}
+        </h2>
+
+        <button
+          onClick={navigateNext}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <FaChevronRight className="text-gray-600" />
+        </button>
+      </div>
+    )
+
+    // 우측: 주별/월별 토글 버튼
+    setRightContent(
+      <div className="flex gap-2 bg-gray-200 p-1 rounded-lg">
+        <button
+          onClick={() => setViewMode('week')}
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            viewMode === 'week'
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          주별
+        </button>
+        <button
+          onClick={() => setViewMode('month')}
+          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            viewMode === 'month'
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          월별
+        </button>
+      </div>
+    )
+
+    // 컴포넌트 언마운트 시 헤더 컨텐츠 제거
+    return () => {
+      setLeftContent(null)
+      setRightContent(null)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentDate, viewMode, setLeftContent, setRightContent])
+
   return (
     <div className="calendar-page flex h-full bg-gray-50 overflow-hidden">
       {/* 메인 캘린더 영역 */}
       <div className="main-calendar flex-1 flex flex-col px-8 pt-8 pb-4 overflow-hidden min-h-0">
-        {/* 헤더 - 고정 */}
-        <div className="flex items-center justify-between mb-6 flex-shrink-0">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={navigatePrevious}
-              className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
-            >
-              <FaChevronLeft className="text-gray-600" />
-            </button>
-
-            <h2 className="text-2xl font-bold text-gray-900">
-              {currentDate.getFullYear()}년 {monthNames[currentDate.getMonth()]}
-            </h2>
-
-            <button
-              onClick={navigateNext}
-              className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
-            >
-              <FaChevronRight className="text-gray-600" />
-            </button>
-          </div>
-
-          {/* 주별/월별 토글 버튼 */}
-          <div className="flex gap-2 bg-gray-200 p-1 rounded-lg">
-            <button
-              onClick={() => setViewMode('week')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                viewMode === 'week'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              주별
-            </button>
-            <button
-              onClick={() => setViewMode('month')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                viewMode === 'month'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              월별
-            </button>
-          </div>
-        </div>
-
         {/* 스크롤 가능한 캘린더 영역 */}
         <div className="flex-1 min-h-0 overflow-hidden">
           {viewMode === 'week' ? (
             /* 주별 뷰 - 시간대별 */
             <div className="bg-white rounded-lg shadow h-full flex flex-col">
               {/* 요일 헤더 */}
-              <div className="grid grid-cols-[60px_repeat(7,1fr)] border-b border-gray-200 flex-shrink-0">
+              <div className="grid grid-cols-[60px_repeat(7,1fr)] border-b border-gray-200 shrink-0">
                 <div className="border-r border-gray-200"></div>
                 {days.map((date, index) => {
                   const isTodayDate = isToday(date)
